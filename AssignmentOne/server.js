@@ -13,6 +13,7 @@
 //Set up Web Service!
 
 require("dotenv").config({ path: __dirname + "/.env" });
+const path = require("path");
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
@@ -42,9 +43,9 @@ db.initialize()
   });
 
 //get all
-// app.get("/api/items", (req, res) => {
-//   res.json({ message: "fetch all items" });
-// });
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "/index.html"));
+});
 
 //This route uses the body of the request to add a new "Restaurant"
 //document to the collection and return a success / fail message to the client.
