@@ -60,35 +60,40 @@ app.get("/api/restaurants", (req, res) => {
   const borough = req.query.borough;
 
   if (page && perPage && borough) {
-    res.status(201).json(db.getAllRestaurants(page, perPage, borough));
+    db.getAllRestaurants(page, perPage, borough)
+      .then((restaurants) => {
+        res.status(201).json(restaurants);
+      })
+      .catch((err) => {
+        res.status(404).json(err);
+      });
   } else {
     res.status(400).json({ message: "Bad Request, data was invalid" });
   }
 });
 
 app.get("/api/restaurants/:restID", (req, res) => {
-  let restaurant = req.params.restID;
-  if (db.getRestaurantById(restaurant)) {
-    res.status(201).json(db.getRestaurantById(restaurant));
-  } else {
-    res.status(404).json({ message: "Bad Request, data was invalid" });
-  }
+  db.getRestaurantById(req.params.restID)
+    .then((restaurant) => {
+      res.status(200).json(restaurant);
+    })
+    .catch((err) => {
+      res.status(400).json(err);
+    });
 });
 
 app.post("/api/restaurants", (req, res) => {
   //Add new restaurant
-  if (
-    req.body.address &&
-    req.body.borough &&
-    req.body.cuisine &&
-    req.body.grades &&
-    req.body.name &&
-    verifyDate(req.body.grades)
-  ) {
-    res.status(201).json(db.addNewRestaurant(req.body));
-  } else {
-    res.status(400).json({ message: "Bad Request, data was invalid" });
-  }
+  verifyDate(req.body.grades)
+    .then(() => {
+      db.addNewRestaurant(req.body);
+    })
+    .then((newRestaurant) => {
+      res.status(200).json(newRestaurant);
+    })
+    .catch((err) => {
+      res.status(400).json(err);
+    });
 });
 
 //This route must accept a numeric route parameter that represents the _id of
@@ -97,22 +102,23 @@ app.post("/api/restaurants", (req, res) => {
 //to update a specific "Restaurant" document in the collection and return a
 //success / fail message to the client.
 app.put("/api/restaurants/:restID", (req, res) => {
-  let restaurant = req.params.restID;
-  if (db.getRestaurantById(restaurant)) {
-    res.status(201).json(db.updateRestaurantById(req.body, restaurant));
-  } else {
-    res.status(404).json({ message: "Bad Request, data was invalid" });
-  }
+  db.getRestaurantById(req.params.restID)
+    .then((restaurant) => {
+      res.status(201).json(db.updateRestaurantById(req.body, restaurant));
+    })
+    .catch((err) => {
+      res.status(404).json(err);
+    });
 });
 
 app.delete("/api/restaurants/:restID", (req, res) => {
-  //If Restaurant could be found in database delete it
-  if (db.getRestaurantById(req.params.restID)) {
-    res.status(201).json(db.deleteRestaurantById(req.params.restID));
-  } else {
-    //If restaurant could not be found
-    res.status(404).json({ message: "Bad Request, data was invalid" });
-  }
+  db.getRestaurantById(req.params.restID)
+    .then((restaurant) => {
+      res.status(201).json(db.deleteRestaurantById(req.body, restaurant));
+    })
+    .catch((err) => {
+      res.status(404).json(err);
+    });
 });
 
 //Function ensures date recieved from client is a valid date
