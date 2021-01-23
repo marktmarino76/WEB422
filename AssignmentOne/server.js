@@ -60,7 +60,7 @@ app.post("/api/restaurants", (req, res) => {
     req.body.name &&
     verifyDate(req.body.grades)
   ) {
-    res.status(201).json(tdb.addNewRestaurant(req.body));
+    res.status(201).json(db.addNewRestaurant(req.body));
   } else {
     res.status(400).json({ message: "Bad Request, data was invalid" });
   }
