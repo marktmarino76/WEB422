@@ -50,22 +50,6 @@ app.get("/", (req, res) => {
 //This route uses the body of the request to add a new "Restaurant"
 //document to the collection and return a success / fail message to the client.
 
-app.post("/api/restaurants", (req, res) => {
-  //Add new restaurant
-  if (
-    req.body.address &&
-    req.body.borough &&
-    req.body.cuisine &&
-    req.body.grades &&
-    req.body.name &&
-    verifyDate(req.body.grades)
-  ) {
-    res.status(201).json(db.addNewRestaurant(req.body));
-  } else {
-    res.status(400).json({ message: "Bad Request, data was invalid" });
-  }
-});
-
 //This route must accept the numeric query parameters "page" and "perPage" as well as
 //the string parameter "borough", ie: /api/restaurants?page=1&perPage=5&borough=Bronx.
 //It will use these values to return all "Restaurant" objects for a specific "page" to
@@ -82,6 +66,31 @@ app.get("/api/restaurants", (req, res) => {
   }
 });
 
+app.get("/api/restaurants/:restID", (req, res) => {
+  let restaurant = req.params.restID;
+  if (db.getRestaurantById(restaurant)) {
+    res.status(201).json(db.getRestaurantById(restaurant));
+  } else {
+    res.status(404).json({ message: "Bad Request, data was invalid" });
+  }
+});
+
+app.post("/api/restaurants", (req, res) => {
+  //Add new restaurant
+  if (
+    req.body.address &&
+    req.body.borough &&
+    req.body.cuisine &&
+    req.body.grades &&
+    req.body.name &&
+    verifyDate(req.body.grades)
+  ) {
+    res.status(201).json(db.addNewRestaurant(req.body));
+  } else {
+    res.status(400).json({ message: "Bad Request, data was invalid" });
+  }
+});
+
 //This route must accept a numeric route parameter that represents the _id of
 //the desired restaurant object, ie: /api/restaurants/5eb3d668b31de5d588f4292e
 //as well as read the contents of the request body.  It will use these values
@@ -89,7 +98,6 @@ app.get("/api/restaurants", (req, res) => {
 //success / fail message to the client.
 app.put("/api/restaurants/:restID", (req, res) => {
   let restaurant = req.params.restID;
-  console.log(restaurant);
   if (db.getRestaurantById(restaurant)) {
     res.status(201).json(db.updateRestaurantById(req.body, restaurant));
   } else {
