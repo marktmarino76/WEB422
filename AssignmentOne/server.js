@@ -12,12 +12,15 @@
 //Assignment 1
 //Set up Web Service!
 
+require("dotenv").config({ path: __dirname + "/.env" });
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const app = express();
 const HTTP_PORT = process.env.PORT || 8080;
-
+const dbusername = process.env.DBUSERNAME;
+const dbpassword = process.env.DBPASSWORD;
+const dbname = process.env.DBNAME;
 app.use(bodyParser.json());
 app.use(cors());
 
@@ -25,7 +28,7 @@ app.use(cors());
 const RestaurantDB = require("./modules/restaurantDB.js");
 //Allows us to create a new "db" instance to work with the data
 const db = new RestaurantDB(
-  "mongodb+srv://admin:1234@cluster0.1onpi.mongodb.net/sample_restaurants?retryWrites=true&w=majority"
+  `mongodb+srv://${dbusername}:${dbpassword}@cluster0.1onpi.mongodb.net/${dbname}?retryWrites=true&w=majority`
 );
 
 db.initialize()
@@ -56,7 +59,7 @@ app.post("/api/restaurants", (req, res) => {
     req.body.name &&
     verifyDate(req.body.grades)
   ) {
-    res.status(201).json(db.addNewRestaurant(req.body));
+    res.status(201).json(tdb.addNewRestaurant(req.body));
   } else {
     res.status(400).json({ message: "Bad Request, data was invalid" });
   }
