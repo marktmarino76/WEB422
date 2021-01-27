@@ -59,17 +59,13 @@ app.get("/api/restaurants", (req, res) => {
   const perPage = req.query.perPage;
   const borough = req.query.borough;
 
-  if (page && perPage && borough) {
-    db.getAllRestaurants(page, perPage, borough)
-      .then((restaurants) => {
-        res.status(201).json(restaurants);
-      })
-      .catch((err) => {
-        res.status(404).json(err);
-      });
-  } else {
-    res.status(400).json({ message: "Bad Request, data was invalid" });
-  }
+  db.getAllRestaurants(page, perPage, borough)
+    .then((restaurants) => {
+      res.status(201).json(restaurants);
+    })
+    .catch((err) => {
+      res.status(400).json(err);
+    });
 });
 
 app.get("/api/restaurants/:restID", (req, res) => {
