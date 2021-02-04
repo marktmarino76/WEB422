@@ -80,10 +80,7 @@ app.get("/api/restaurants/:restID", (req, res) => {
 
 app.post("/api/restaurants", (req, res) => {
   //Add new restaurant
-  verifyDate(req.body.grades)
-    .then(() => {
-      db.addNewRestaurant(req.body);
-    })
+  db.addNewRestaurant(req.body)
     .then((newRestaurant) => {
       res.status(200).json(newRestaurant);
     })
@@ -109,8 +106,8 @@ app.put("/api/restaurants/:restID", (req, res) => {
 
 app.delete("/api/restaurants/:restID", (req, res) => {
   db.getRestaurantById(req.params.restID)
-    .then((restaurant) => {
-      res.status(201).json(db.deleteRestaurantById(req.body, restaurant));
+    .then(() => {
+      res.status(201).json({ message: "Restaurant successfully deleted" });
     })
     .catch((err) => {
       res.status(404).json(err);
@@ -118,11 +115,11 @@ app.delete("/api/restaurants/:restID", (req, res) => {
 });
 
 //Function ensures date recieved from client is a valid date
-function verifyDate(dates) {
-  for (i = 0; i < dates.length; i++) {
-    if (isNaN(Date.parse(dates[i].date))) {
-      return false;
-    }
-  }
-  return true;
-}
+// function verifyDate(dates) {
+//   for (i = 0; i < dates.length; i++) {
+//     if (isNaN(Date.parse(dates[i].date))) {
+//       return false;
+//     }
+//   }
+//   return true;
+// }
